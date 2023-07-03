@@ -79,41 +79,35 @@ public class NimMenuBar extends VBox {
 	}
 
 	private Menu createStrategyMenu() {
-		Menu mnuSettings = new Menu("_Strategy");
-		mnuSettings.setMnemonicParsing(true);
+	    Menu mnuSettings = new Menu("_Strategy");
+	    mnuSettings.setMnemonicParsing(true);
 
-		ToggleGroup tglStrategy = new ToggleGroup();
+	    ToggleGroup tglStrategy = new ToggleGroup();
 
-		RadioMenuItem mnuCautious = new RadioMenuItem("_Cautious");
-		mnuCautious.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));
-		mnuCautious
-				.setOnAction(event -> this.nimPane.getGame().getComputerPlayer().setStrategy(new CautiousStrategy()));
-		mnuCautious.setMnemonicParsing(true);
-		mnuCautious.setToggleGroup(tglStrategy);
+	    this.addStrategyItem(mnuSettings, tglStrategy, "_Cautious", KeyCode.C, new CautiousStrategy());
+	    this.addStrategyItem(mnuSettings, tglStrategy, "Gr_eedy", KeyCode.E, new GreedyStrategy());
+	    this.addStrategyItem(mnuSettings, tglStrategy, "_Random", KeyCode.R, new RandomStrategy());
 
-		RadioMenuItem mnuGreedy = new RadioMenuItem("Gr_eedy");
-		mnuGreedy.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
-		mnuGreedy.setOnAction(event -> this.nimPane.getGame().getComputerPlayer().setStrategy(new GreedyStrategy()));
-		mnuGreedy.setMnemonicParsing(true);
-		mnuGreedy.setToggleGroup(tglStrategy);
+	    NumberOfSticksStrategy currentStrategy = this.nimPane.getGame().getComputerPlayer().getStrategy();
+	    for (MenuItem menuItem : mnuSettings.getItems()) {
+	        RadioMenuItem radioMenuItem = (RadioMenuItem) menuItem;
+	        radioMenuItem.setToggleGroup(tglStrategy);
+	        if (currentStrategy.getClass() == radioMenuItem.getUserData().getClass()) {
+	            radioMenuItem.setSelected(true);
+	        }
+	    }
 
-		RadioMenuItem mnuRandom = new RadioMenuItem("_Random");
-		mnuRandom.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
-		mnuRandom.setOnAction(event -> this.nimPane.getGame().getComputerPlayer().setStrategy(new RandomStrategy()));
-		mnuRandom.setMnemonicParsing(true);
-		mnuRandom.setToggleGroup(tglStrategy);
+	    return mnuSettings;
+	}
 
-		NumberOfSticksStrategy currentStrategy = this.nimPane.getGame().getComputerPlayer().getStrategy();
-		if (currentStrategy.getClass() == CautiousStrategy.class) {
-			mnuCautious.setSelected(true);
-		} else if (currentStrategy.getClass() == RandomStrategy.class) {
-			mnuRandom.setSelected(true);
-		} else {
-			mnuGreedy.setSelected(true);
-		}
-
-		mnuSettings.getItems().addAll(mnuCautious, mnuGreedy, mnuRandom);
-		return mnuSettings;
+	private void addStrategyItem(Menu menu, ToggleGroup toggleGroup, String text, KeyCode accelerator, NumberOfSticksStrategy strategy) {
+	    RadioMenuItem menuItem = new RadioMenuItem(text);
+	    menuItem.setAccelerator(new KeyCodeCombination(accelerator, KeyCombination.SHORTCUT_DOWN));
+	    menuItem.setOnAction(event -> this.nimPane.getGame().getComputerPlayer().setStrategy(strategy));
+	    menuItem.setMnemonicParsing(true);
+	    menuItem.setToggleGroup(toggleGroup);
+	    menuItem.setUserData(strategy);
+	    menu.getItems().add(menuItem);
 	}
 
 	private Menu createGameMenu() {
