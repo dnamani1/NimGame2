@@ -117,20 +117,8 @@ public class NimMenuBar extends VBox {
 		MenuItem mnuNew = new MenuItem("_New");
 		mnuNew.setMnemonicParsing(true);
 		mnuNew.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
-		mnuNew.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent theEventObject) {
-				NimMenuBar.this.nimPane.getPnChooseFirstPlayer().reset();
-				NimMenuBar.this.nimPane.getPnChooseFirstPlayer().setDisable(false);
-				NimMenuBar.this.nimPane.getPnHumanPlayer().setDisable(true);
-				NimMenuBar.this.nimPane.getPnComputerPlayer().setDisable(true);
-				NimMenuBar.this.nimPane.getPnComputerPlayer().resetNumberTaken();
-				NimMenuBar.this.nimPane.getPnHumanPlayer().resetNumberToTakeComboBox();
-				if (NimMenuBar.this.nimPane.isShouldShowHelpDialog()) {
-					NimHelpDialog.showHelpDialog(true);
-					NimMenuBar.this.nimPane.setShouldShowHelpDialog(false);
-				}
-			}
+		mnuNew.setOnAction(new NewGameMenuItemHandler() {
+			
 		});
 
 		MenuItem mnuExit = new MenuItem("E_xit");
@@ -140,5 +128,22 @@ public class NimMenuBar extends VBox {
 
 		mnuFile.getItems().addAll(mnuNew, mnuExit);
 		return mnuFile;
+	}
+	
+	private class NewGameMenuItemHandler implements EventHandler<ActionEvent> {
+		
+		@Override
+		public void handle(ActionEvent theEventObject) {
+			NimMenuBar.this.nimPane.getPnChooseFirstPlayer().reset();
+			NimMenuBar.this.nimPane.getPnChooseFirstPlayer().setDisable(false);
+			NimMenuBar.this.nimPane.getPnHumanPlayer().setDisable(true);
+			NimMenuBar.this.nimPane.getPnComputerPlayer().setDisable(true);
+			NimMenuBar.this.nimPane.getPnComputerPlayer().resetNumberTaken();
+			NimMenuBar.this.nimPane.getPnHumanPlayer().resetNumberToTakeComboBox();
+			if (NimMenuBar.this.nimPane.isShouldShowHelpDialog()) {
+				NimHelpDialog.showHelpDialog(true);
+				NimMenuBar.this.nimPane.setShouldShowHelpDialog(false);
+			}
+		}
 	}
 }
