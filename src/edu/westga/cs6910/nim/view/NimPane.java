@@ -1,5 +1,7 @@
 package edu.westga.cs6910.nim.view;
 
+import java.time.LocalDate;
+
 import edu.westga.cs6910.nim.model.Game;
 import edu.westga.cs6910.nim.model.Player;
 import edu.westga.cs6910.nim.model.strategy.CautiousStrategy;
@@ -8,6 +10,7 @@ import edu.westga.cs6910.nim.model.strategy.NumberOfSticksStrategy;
 import edu.westga.cs6910.nim.model.strategy.RandomStrategy;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -97,9 +100,34 @@ public class NimPane extends BorderPane {
 
 		Menu mnuSettings = this.createStrategyMenu();
 
-		mnuMain.getMenus().addAll(mnuGame, mnuSettings);
+		Menu mnuHelp = this.createHelpMenu();
+
+		mnuMain.getMenus().addAll(mnuGame, mnuSettings, mnuHelp);
 		vbxMenuHolder.getChildren().addAll(mnuMain);
 		this.setTop(vbxMenuHolder);
+	}
+
+	private Menu createHelpMenu() {
+		Menu mnuHelp = new Menu("_Help");
+		mnuHelp.setMnemonicParsing(true);
+
+		MenuItem mnuShowHelp = new MenuItem("H_elp");
+		mnuShowHelp.setOnAction(event -> NimHelpDialog.showHelpDialog());
+
+		LocalDate currentDate = LocalDate.now();
+		String author = "Deeksha Namani";
+		String aboutText = "Date: " + currentDate + "\nAuthor: " + author;
+		MenuItem mnuAbout = new MenuItem("_About");
+		mnuAbout.setOnAction(event -> {
+			Alert aboutDialog = new Alert(Alert.AlertType.INFORMATION);
+			aboutDialog.setTitle("About");
+			aboutDialog.setHeaderText("About the Application");
+			aboutDialog.setContentText(aboutText);
+			aboutDialog.showAndWait();
+		});
+
+		mnuHelp.getItems().addAll(mnuShowHelp, mnuAbout);
+		return mnuHelp;
 	}
 
 	private Menu createStrategyMenu() {
