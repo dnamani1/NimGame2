@@ -18,9 +18,10 @@ public class NimHelpDialog {
 	/**
 	 * This method display the help dialog when ever called.
 	 * 
+	 * @param shouldShowHelp should
 	 * @return help dialog if true
 	 */
-	public static boolean showHelpDialog() {
+	public static boolean showHelpDialog(boolean shouldShowHelp) {
 		Alert message = new Alert(AlertType.CONFIRMATION);
 		message.setTitle("CS6910: Better Nim");
 

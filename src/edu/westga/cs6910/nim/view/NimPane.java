@@ -1,32 +1,17 @@
 package edu.westga.cs6910.nim.view;
 
-import java.time.LocalDate;
-
 import edu.westga.cs6910.nim.model.Game;
 import edu.westga.cs6910.nim.model.Player;
-import edu.westga.cs6910.nim.model.strategy.CautiousStrategy;
-import edu.westga.cs6910.nim.model.strategy.GreedyStrategy;
-import edu.westga.cs6910.nim.model.strategy.NumberOfSticksStrategy;
-import edu.westga.cs6910.nim.model.strategy.RandomStrategy;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 
 /**
  * Defines a GUI for the 1-pile Nim game. This class was started by CS6910
@@ -42,6 +27,7 @@ public class NimPane extends BorderPane {
 	private StatusPane pnGameInfo;
 	private NewGamePane pnChooseFirstPlayer;
 	private boolean shouldShowHelpDialog;
+	private NimMenuBar nimMenuBar;
 
 	/**
 	 * Creates a pane object to provide the view for the specified Game model
@@ -58,11 +44,11 @@ public class NimPane extends BorderPane {
 		}
 		this.theGame = theGame;
 
-		this.shouldShowHelpDialog = true;
-		this.shouldShowHelpDialog = NimHelpDialog.showHelpDialog();
+		this.shouldShowHelpDialog = NimHelpDialog.showHelpDialog(this.shouldShowHelpDialog);
 		this.pnContent = new BorderPane();
 
-		this.createMenu();
+		this.nimMenuBar = new NimMenuBar(this, this.shouldShowHelpDialog);
+		this.setTop(this.nimMenuBar);
 
 		this.pnChooseFirstPlayer = new NewGamePane(theGame);
 		HBox topBox = this.createHBoxHolder(this.pnChooseFirstPlayer, false);
@@ -91,132 +77,73 @@ public class NimPane extends BorderPane {
 		return leftBox;
 	}
 
-	private void createMenu() {
-		VBox vbxMenuHolder = new VBox();
-
-		MenuBar mnuMain = new MenuBar();
-
-		Menu mnuGame = this.createGameMenu();
-
-		Menu mnuSettings = this.createStrategyMenu();
-
-		Menu mnuHelp = this.createHelpMenu();
-
-		mnuMain.getMenus().addAll(mnuGame, mnuSettings, mnuHelp);
-		vbxMenuHolder.getChildren().addAll(mnuMain);
-		this.setTop(vbxMenuHolder);
+	/**
+	 * This method gets the game object associated with this pane.
+	 * 
+	 * @return game
+	 */
+	public Game getGame() {
+		return this.theGame;
 	}
 
-	private Menu createHelpMenu() {
-		Menu mnuHelp = new Menu("_Help");
-		mnuHelp.setMnemonicParsing(true);
-
-		MenuItem mnuShowHelp = new MenuItem("H_elp");
-		mnuShowHelp.setOnAction(event -> NimHelpDialog.showHelpDialog());
-
-		LocalDate currentDate = LocalDate.now();
-		String author = "Deeksha Namani";
-		String aboutText = "Date: " + currentDate + "\nAuthor: " + author;
-		MenuItem mnuAbout = new MenuItem("_About");
-		mnuAbout.setOnAction(event -> {
-			Alert aboutDialog = new Alert(Alert.AlertType.INFORMATION);
-			aboutDialog.setTitle("About");
-			aboutDialog.setHeaderText("About the Application");
-			aboutDialog.setContentText(aboutText);
-			aboutDialog.showAndWait();
-		});
-
-		mnuHelp.getItems().addAll(mnuShowHelp, mnuAbout);
-		return mnuHelp;
+	/**
+	 * This method gets the NewGamePane object associated with this pane.
+	 * 
+	 * @return game
+	 */
+	public NewGamePane getNewGamePane() {
+		return this.pnChooseFirstPlayer;
 	}
 
-	private Menu createStrategyMenu() {
-		Menu mnuSettings = new Menu("_Strategy");
-		mnuSettings.setMnemonicParsing(true);
-
-		ToggleGroup tglStrategy = new ToggleGroup();
-
-		RadioMenuItem mnuCautious = new RadioMenuItem("_Cautious");
-		mnuCautious.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));
-		mnuCautious.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				NimPane.this.theGame.getComputerPlayer().setStrategy(new CautiousStrategy());
-			}
-		});
-		mnuCautious.setMnemonicParsing(true);
-		mnuCautious.setToggleGroup(tglStrategy);
-
-		RadioMenuItem mnuGreedy = new RadioMenuItem("Gr_eedy");
-		mnuGreedy.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
-		mnuGreedy.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				NimPane.this.theGame.getComputerPlayer().setStrategy(new GreedyStrategy());
-			}
-		});
-		mnuGreedy.setMnemonicParsing(true);
-		mnuGreedy.setToggleGroup(tglStrategy);
-
-		RadioMenuItem mnuRandom = new RadioMenuItem("_Random");
-		mnuRandom.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
-		mnuRandom.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent theEventObject) {
-				NimPane.this.theGame.getComputerPlayer().setStrategy(new RandomStrategy());
-			}
-		});
-		mnuRandom.setMnemonicParsing(true);
-		mnuRandom.setToggleGroup(tglStrategy);
-
-		NumberOfSticksStrategy currentStrategy = this.theGame.getComputerPlayer().getStrategy();
-		if (currentStrategy.getClass() == CautiousStrategy.class) {
-			mnuCautious.setSelected(true);
-		} else if (currentStrategy.getClass() == RandomStrategy.class) {
-			mnuRandom.setSelected(true);
-		} else {
-			mnuGreedy.setSelected(true);
-		}
-
-		mnuSettings.getItems().addAll(mnuCautious, mnuGreedy, mnuRandom);
-		return mnuSettings;
+	/**
+	 * This method keep track if the help dialog should be shown.
+	 * 
+	 * @return shouldShowHelpDialog
+	 */
+	public boolean isShouldShowHelpDialog() {
+		return this.shouldShowHelpDialog;
 	}
 
-	private Menu createGameMenu() {
-		Menu mnuFile = new Menu("_Game");
-		mnuFile.setMnemonicParsing(true);
+	/**
+	 * This method sets whether the help dialog should be shown.
+	 * 
+	 * @param shouldShowHelpDialog true if the help dialog should be shown
+	 */
+	public void setShouldShowHelpDialog(boolean shouldShowHelpDialog) {
+		this.shouldShowHelpDialog = shouldShowHelpDialog;
+	}
 
-		MenuItem mnuNew = new MenuItem("_New");
-		mnuNew.setMnemonicParsing(true);
-		mnuNew.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
-		mnuNew.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent theEventObject) {
-				NimPane.this.pnChooseFirstPlayer.reset();
-				NimPane.this.pnChooseFirstPlayer.setDisable(false);
-				NimPane.this.pnHumanPlayer.setDisable(true);
-				NimPane.this.pnComputerPlayer.setDisable(true);
-				NimPane.this.pnComputerPlayer.resetNumberTaken();
-				NimPane.this.pnHumanPlayer.resetNumberToTakeComboBox();
-				if (NimPane.this.shouldShowHelpDialog) {
-					NimPane.this.shouldShowHelpDialog = NimHelpDialog.showHelpDialog();
-				}
-			}
-		});
+	/**
+	 * This method gets the NewGamePane object associated with this pane.
+	 * 
+	 * @return pnChooseFirstPlayer
+	 */
+	public NewGamePane getPnChooseFirstPlayer() {
+		return this.pnChooseFirstPlayer;
+	}
 
-		MenuItem mnuExit = new MenuItem("E_xit");
-		mnuExit.setMnemonicParsing(true);
-		mnuExit.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.SHORTCUT_DOWN));
-		mnuExit.setOnAction(event -> System.exit(0));
+	/**
+	 * This method gets the HumanPane object associated with this pane.
+	 * 
+	 * @return pnHumanPlayer
+	 */
+	public HumanPane getPnHumanPlayer() {
+		return this.pnHumanPlayer;
+	}
 
-		mnuFile.getItems().addAll(mnuNew, mnuExit);
-		return mnuFile;
+	/**
+	 * This method gets the ComputerPane object associated with this pane.
+	 * 
+	 * @return pnComputerPlayer
+	 */
+	public ComputerPane getPnComputerPlayer() {
+		return this.pnComputerPlayer;
 	}
 
 	/**
 	 * Defines the panel in which the user selects which Player plays first.
 	 */
-	private final class NewGamePane extends GridPane {
+	public final class NewGamePane extends GridPane {
 		private RadioButton radHumanPlayer;
 		private RadioButton radComputerPlayer;
 		private RadioButton radRandomPlayer;
