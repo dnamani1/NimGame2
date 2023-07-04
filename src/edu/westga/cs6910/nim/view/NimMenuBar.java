@@ -140,9 +140,9 @@ public class NimMenuBar extends VBox {
             NimMenuBar.this.fullNimPane.getPnComputerPlayer().resetNumberTaken();
             NimMenuBar.this.fullNimPane.getPnHumanPlayer().resetNumberToTakeComboBox();
             if (NimMenuBar.this.shouldShowHelpDialog) {
-                NimHelpDialog.showHelpDialog(true);
-                NimMenuBar.this.shouldShowHelpDialog = false;
-            }
+            	NimMenuBar.this.shouldShowHelpDialog = NimHelpDialog.showHelpDialog(NimMenuBar.this.shouldShowHelpDialog);
+			}
+            
         }
     }
 }
