@@ -2,8 +2,6 @@ package edu.westga.cs6910.nim.view;
 
 import edu.westga.cs6910.nim.model.Game;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 
 /**
  * Defines a GUI for the 1-pile Nim game. This class was started by CS6910
@@ -13,11 +11,7 @@ import javafx.scene.layout.Pane;
  */
 public class NimPane extends BorderPane {
 	private Game theGame;
-	private BorderPane pnContent;
-	private HumanPane pnHumanPlayer;
-	private ComputerPane pnComputerPlayer;
-	private StatusPane pnGameInfo;
-	private NewGamePane pnChooseFirstPlayer;
+	private FullNimPane fullNimPane;
 	private boolean shouldShowHelpDialog;
 	private NimMenuBar nimMenuBar;
 
@@ -35,62 +29,29 @@ public class NimPane extends BorderPane {
 			throw new IllegalArgumentException("Invalid game");
 		}
 		this.theGame = theGame;
-
 		this.shouldShowHelpDialog = NimHelpDialog.showHelpDialog(this.shouldShowHelpDialog);
-		this.pnContent = new BorderPane();
 
-		this.nimMenuBar = new NimMenuBar(this, this.shouldShowHelpDialog);
+		this.fullNimPane = new FullNimPane(theGame, this);
+
+		this.nimMenuBar = new NimMenuBar(this.fullNimPane, this.shouldShowHelpDialog);
 		this.setTop(this.nimMenuBar);
 
-		this.pnChooseFirstPlayer = new NewGamePane(theGame, this);
-		HBox topBox = this.createHBoxHolder(this.pnChooseFirstPlayer, false);
-		this.pnContent.setTop(topBox);
-
-		this.pnHumanPlayer = new HumanPane(theGame);
-		HBox leftBox = this.createHBoxHolder(this.pnHumanPlayer, true);
-		this.pnContent.setLeft(leftBox);
-
-		this.pnComputerPlayer = new ComputerPane(theGame);
-		HBox centerBox = this.createHBoxHolder(this.pnComputerPlayer, true);
-		this.pnContent.setCenter(centerBox);
-
-		this.pnGameInfo = new StatusPane(theGame);
-		HBox bottomBox = this.createHBoxHolder(this.pnGameInfo, false);
-		this.pnContent.setBottom(bottomBox);
-
-		this.setCenter(this.pnContent);
-	}
-
-	private HBox createHBoxHolder(Pane newPane, boolean disable) {
-		newPane.setDisable(disable);
-		HBox leftBox = new HBox();
-		leftBox.getStyleClass().add("pane-border");
-		leftBox.getChildren().add(newPane);
-		return leftBox;
+		this.setCenter(this.fullNimPane);
 	}
 
 	/**
-	 * This method gets the game object associated with this pane.
+	 * This method gets the game object when called.
 	 * 
-	 * @return game
+	 * @return the game object
 	 */
 	public Game getGame() {
 		return this.theGame;
 	}
 
 	/**
-	 * This method gets the NewGamePane object associated with this pane.
+	 * This method keeps track if the help dialog should be shown.
 	 * 
-	 * @return game
-	 */
-	public NewGamePane getNewGamePane() {
-		return this.pnChooseFirstPlayer;
-	}
-
-	/**
-	 * This method keep track if the help dialog should be shown.
-	 * 
-	 * @return shouldShowHelpDialog
+	 * @return if true the help dialog is shown
 	 */
 	public boolean isShouldShowHelpDialog() {
 		return this.shouldShowHelpDialog;
@@ -103,41 +64,5 @@ public class NimPane extends BorderPane {
 	 */
 	public void setShouldShowHelpDialog(boolean shouldShowHelpDialog) {
 		this.shouldShowHelpDialog = shouldShowHelpDialog;
-	}
-
-	/**
-	 * This method gets the NewGamePane object when called.
-	 * 
-	 * @return pnChooseFirstPlayer
-	 */
-	public NewGamePane getPnChooseFirstPlayer() {
-		return this.pnChooseFirstPlayer;
-	}
-
-	/**
-	 * This method gets the HumanPane object when called.
-	 * 
-	 * @return pnHumanPlayer
-	 */
-	public HumanPane getPnHumanPlayer() {
-		return this.pnHumanPlayer;
-	}
-
-	/**
-	 * This method gets the ComputerPane object when called.
-	 * 
-	 * @return pnComputerPlayer
-	 */
-	public ComputerPane getPnComputerPlayer() {
-		return this.pnComputerPlayer;
-	}
-
-	/**
-	 * This method gets the StatusPane object when called.
-	 * 
-	 * @return pnGameInfo
-	 */
-	public StatusPane getPnGameInfo() {
-		return this.pnGameInfo;
 	}
 }
